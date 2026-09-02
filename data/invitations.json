@@ -23,5 +23,17 @@
     "file":"demos/hesen-turkan.html",
     "previewStyle":"classic",
     "previewTop":"DƏVƏTNAMƏ"
+  },
+  {
+    "id":"turan-gunay",
+    "title":"Turan & Günay",
+    "names":"TURAN & GÜNAY",
+    "category":"toy",
+    "categoryLabel":"Toy",
+    "description":"Buklet açılışı, qızılı detallı tünd premium dizayn.",
+    "date":"05 SENTYABR 2026",
+    "file":"demos/turan-gunay.html",
+    "previewStyle":"classic",
+    "previewTop":"DƏVƏTNAMƏ"
   }
 ]
