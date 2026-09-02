@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Turan & Günay — Toy Dəvətnaməsi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Marcellus+SC&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#120d09;
+    --paper:#1c140d;
+    --paper-2:#241a11;
+    --gold:#c9a25e;
+    --gold-soft:#8c6a3f;
+    --gold-bright:#e7c98a;
+    --cream:#f2e6d3;
+    --hairline:#4a3a28;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(ellipse at 50% 0%, #241a10 0%, var(--ink) 60%);
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--cream);
+    padding:32px 16px;
+    overflow-x:hidden;
+  }
+
+  .stage{
+    perspective:2400px;
+    width:100%;
+    max-width:860px;
+  }
+
+  .hint{
+    text-align:center;
+    color:var(--gold-soft);
+    font-size:14px;
+    letter-spacing:.06em;
+    margin-bottom:22px;
+    opacity:.85;
+  }
+
+  .book{
+    position:relative;
+    width:100%;
+    max-width:640px;
+    margin:0 auto;
+    aspect-ratio:640/430;
+  }
+
+  /* ---------- inner spread (revealed once cover opens) ---------- */
+  .spread{
+    position:absolute;
+    inset:0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    background:var(--paper);
+    border-radius:4px;
+    box-shadow:
+      0 40px 80px -30px rgba(0,0,0,.75),
+      inset 0 0 0 1px var(--hairline);
+    overflow:hidden;
+  }
+  .spread::before{
+    /* center fold shadow */
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:50%;
+    width:60px;
+    margin-left:-30px;
+    background:linear-gradient(90deg, rgba(0,0,0,.35), transparent 45%, transparent 55%, rgba(0,0,0,.35));
+    pointer-events:none;
+    z-index:3;
+  }
+
+  .page{
+    position:relative;
+    padding:38px 30px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .page-left{
+    border-right:1px solid var(--hairline);
+  }
+
+  .ornament{
+    width:46px;
+    height:46px;
+    margin-bottom:14px;
+    opacity:.9;
+  }
+  .ornament path,.ornament circle,.ornament line{
+    stroke:var(--gold);
+    fill:none;
+    stroke-width:1.1;
+  }
+
+  .eyebrow{
+    font-family:'Marcellus SC', serif;
+    font-size:11px;
+    letter-spacing:.32em;
+    color:var(--gold-soft);
+    margin:0 0 10px;
+  }
+
+  .names{
+    font-size:clamp(26px,5vw,36px);
+    font-weight:500;
+    color:var(--gold-bright);
+    margin:0 0 6px;
+    line-height:1.15;
+  }
+  .amp{
+    display:block;
+    font-style:italic;
+    font-size:.6em;
+    color:var(--gold-soft);
+    margin:2px 0;
+  }
+
+  .lede{
+    font-size:15px;
+    line-height:1.7;
+    color:var(--cream);
+    opacity:.88;
+    max-width:26ch;
+    margin:0 0 18px;
+  }
+
+  .facts{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:14px;
+    color:var(--cream);
+  }
+  .facts .label{
+    font-family:'Marcellus SC', serif;
+    font-size:10px;
+    letter-spacing:.22em;
+    color:var(--gold-soft);
+    margin-top:10px;
+  }
+  .facts .value{
+    font-size:17px;
+    color:var(--gold-bright);
+  }
+
+  .rsvp-line{
+    margin-top:22px;
+    font-size:12px;
+    letter-spacing:.05em;
+    color:var(--gold-soft);
+  }
+
+  /* ---------- cover, hinged on the left edge ---------- */
+  .cover{
+    position:absolute;
+    inset:0;
+    left:0;
+    width:50%;
+    transform-origin:left center;
+    transform:rotateY(0deg);
+    transition:transform 1.15s cubic-bezier(.65,0,.2,1);
+    transform-style:preserve-3d;
+    z-index:5;
+    cursor:pointer;
+  }
+  .book.open .cover{
+    transform:rotateY(-172deg);
+  }
+
+  .cover-face{
+    position:absolute;
+    inset:0;
+    backface-visibility:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:30px;
+  }
+
+  .cover-front{
+    background:
+      linear-gradient(135deg, #241a10, #1a130c 55%, #241a10),
+      repeating-linear-gradient(115deg, rgba(201,162,94,.03) 0 2px, transparent 2px 6px);
+    border-radius:4px 0 0 4px;
+    box-shadow: inset 0 0 0 1px var(--hairline), 8px 0 24px -12px rgba(0,0,0,.7);
+  }
+  .cover-front::after{
+    content:"";
+    position:absolute;
+    inset:14px;
+    border:1px solid var(--gold-soft);
+    border-radius:2px;
+    opacity:.55;
+    pointer-events:none;
+  }
+
+  .cover-back{
+    background:var(--paper-2);
+    transform:rotateY(180deg);
+    border-right:1px solid var(--hairline);
+  }
+
+  .seal{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .seal::before{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border:1px solid var(--gold-soft);
+    border-radius:50%;
+  }
+  .seal span{
+    font-family:'Marcellus SC', serif;
+    font-size:18px;
+    color:var(--gold-bright);
+  }
+
+  .cover-title{
+    font-family:'Marcellus SC', serif;
+    font-size:12px;
+    letter-spacing:.3em;
+    color:var(--gold-soft);
+    margin:0 0 8px;
+  }
+  .cover-names{
+    font-size:clamp(24px,4.6vw,30px);
+    color:var(--gold-bright);
+    margin:0 0 22px;
+    line-height:1.2;
+  }
+  .open-tag{
+    font-size:12px;
+    letter-spacing:.14em;
+    color:var(--gold-soft);
+    border-top:1px solid var(--hairline);
+    padding-top:14px;
+    width:70%;
+  }
+
+  .close-btn{
+    position:absolute;
+    top:-42px;
+    right:0;
+    background:transparent;
+    border:1px solid var(--gold-soft);
+    color:var(--gold-soft);
+    font-family:'Cormorant Garamond', serif;
+    font-size:13px;
+    letter-spacing:.08em;
+    padding:7px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .4s ease .5s, color .2s, border-color .2s;
+  }
+  .book.open .close-btn{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .close-btn:hover{
+    color:var(--gold-bright);
+    border-color:var(--gold-bright);
+  }
+
+  @media (max-width:560px){
+    .book{max-width:100%;}
+    .page{padding:26px 18px}
+    .spread{grid-template-columns:1fr; aspect-ratio:auto}
+    .book{aspect-ratio:auto; min-height:560px}
+    .page-left{border-right:none;border-bottom:1px solid var(--hairline)}
+    .spread::before{display:none}
+    .cover{width:100%}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .cover{transition:none}
+  }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <p class="hint">Açmaq üçün üz qapağa toxun</p>
+
+    <div class="book" id="book">
+      <button class="close-btn" onclick="document.getElementById('book').classList.remove('open')">Bağla</button>
+
+      <div class="spread">
+        <div class="page page-left">
+          <svg class="ornament" viewBox="0 0 48 48"><circle cx="24" cy="24" r="17"/><path d="M24 9 L24 15 M24 33 L24 39 M9 24 L15 24 M33 24 L39 24"/></svg>
+          <p class="eyebrow">Dəvət olunursunuz</p>
+          <h1 class="names">Turan<span class="amp">&amp;</span>Günay</h1>
+          <p class="lede">Həyatımızın ən gözəl günündə — toy mərasimimizdə sizi də aramızda görmək istəyirik.</p>
+          <div class="rsvp-line">İştirakınızı əvvəlcədən bildirməyinizi xahiş edirik</div>
+        </div>
+
+        <div class="page page-right">
+          <p class="eyebrow">Toy mərasimi</p>
+          <div class="facts">
+            <div class="label">Tarix</div>
+            <div class="value">20 Sentyabr 2026, Bazar</div>
+            <div class="label">Vaxt</div>
+            <div class="value">19:00</div>
+            <div class="label">Məkan</div>
+            <div class="value">Şadlıq Sarayı, Bakı</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cover" id="cover">
+        <div class="cover-face cover-front">
+          <div class="seal"><span>E&amp;A</span></div>
+          <p class="cover-title">Toy Dəvətnaməsi</p>
+          <h2 class="cover-names">Turan &amp; Günay</h2>
+          <p class="open-tag">açmaq üçün toxunun</p>
+        </div>
+        <div class="cover-face cover-back">
+          <svg class="ornament" viewBox="0 0 48 48"><circle cx="24" cy="24" r="14"/><path d="M24 3 L24 10 M24 38 L24 45 M3 24 L10 24 M38 24 L45 24"/></svg>
+          <p class="eyebrow" style="margin-top:8px">20 Sentyabr 2026</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const book = document.getElementById('book');
+    const cover = document.getElementById('cover');
+    cover.addEventListener('click', () => {
+      book.classList.toggle('open');
+    });
+  </script>
+
+</body>
+</html>
